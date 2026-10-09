@@ -53,3 +53,11 @@ Root also inspected actual1439 CSS-pixel output with authored200% text and compu
 
 
 Root also supplied the earlier actual correction-checkpoint browser suite52/52 and these production witnesses at62f1028: releasing Design sign-off onDec4 moved Pilot toDec4–8, Sales toDec4–10 and Ready/headline toDec16/15dayslate. Packaging-delay gaveDec2/1daylate and the explanatory chain changed through Packaging→Design sign-off, reconciling5extra−2float=3completion delay. Supplier-release gaveDec4/3dayslate; resource repair gaveDec5/4dayslate. The exact-table Packaging action selected the matching task and focused #task-name. These later witnesses supersede the source-checkpoint paragraph's pending labels only for the named model/UI tasks; human and complete layout gates stay open.
+
+## Enlarged exact-table failure and CSS repair — October 9, 2026
+
+Root's actual 200% text inspection, independently reviewed from `final-layout/roadmap-enlarged-task-action.png`, found crowding between the Ready to launch date and Days / type column, with “milestone” split before its final letter. The earlier result-view observation did not cover this exact-table defect. The failed screenshot remains in the course evidence.
+
+Source checkpoint `c9c48689abadfa230de8fd47ec049fae897fd65b` changes only table CSS: date cells have an 11em minimum width, duration/type cells have an 8em minimum, and those two columns wrap only at normal word boundaries. Both widths follow their actual text size; the existing table container provides local horizontal scrolling. Arbitrary task/dependency names retain their existing wrapping. JavaScript, model, HTML, tests and PLAN are unchanged; the plan's readable exact-table requirement still applies.
+
+Production build and whitespace checks passed. Built assets are `index-DFxfruV9.js` and `index-Wyd2eCZt.css`; the JavaScript asset filename changes with the CSS import, not an application-source edit. The unchanged 52-case model suite was not rerun. Actual current 200% table separation, narrow local scrolling and task-action follow-up remain pending root's targeted production retest on port9739. This source repair is not yet a rendered pass or publication claim.
