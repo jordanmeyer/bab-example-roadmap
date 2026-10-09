@@ -57,3 +57,5 @@ model exports day(dateString), iso(integerDay), validate(plan), schedule(plan), 
 Revision note2026-10-09: initial agreed design and runnable acceptance recorded before implementation.
 
 Revision note2026-10-09: maintained actual discoveries, model/UI implementation and remaining evidence; retained failures instead of replacing them with passclaims.
+
+Revisionnote2026-10-09: reviewer-directedactualBackfailurefixedwithnativeautocompleteoff onforms/chartselect, noextralifecyclehandler. Invaliddraftstatus nowtruthful. AppliedandpendingBackcases independentlyexercised bydeveloperandrecordedinEVALUATION.

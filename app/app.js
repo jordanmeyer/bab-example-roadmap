@@ -13,8 +13,9 @@ const node = (tag,text,className) => {const el=document.createElement(tag);el.te
 function announce(message) { $('notice').textContent=message; }
 function commit(next,message) {
   plan=next; revision++;
-  if(schedule(plan).valid) lastValid=structuredClone(plan);
-  render(); announce(message);
+  const valid=schedule(plan).valid;
+  if(valid) lastValid=structuredClone(plan);
+  render(); announce(valid?message:'Draft saved for correction. Calculated results are paused; restore the last valid schedule or fix the reported errors.');
 }
 function editTask() {
   const t=plan.tasks.find(t=>t.id===$('task-select').value) || plan.tasks[0];
@@ -78,3 +79,4 @@ $('import').addEventListener('change',async event=>{
 });
 $('notices').href=import.meta.env.BASE_URL+'THIRD-PARTY-NOTICES.txt';
 render();announce('Synthetic launch loaded. Every change stays in this tab until you export it.');
+
