@@ -11,7 +11,9 @@ A fictional consumer-products team can see whether a promised launch survives pa
 - [x] (2026-10-09) Simulated planning completed; assumptions and exact confirmation saved.
 - [x] (2026-10-09) New isolated folder and managed starter prepared.
 - [x] (2026-10-09) Implemented model, native forms, persistent readonlyGantt and40independentcases.
-- [ ] Verify production, import/export, keyboard and narrow/desktop; simplify source separately.
+- [x] (2026-10-09) Original production, import/export and review completed; prior evidence retained.
+- [x] (2026-10-09) Revised resources/milestones/promise/names/pending state and typography implemented; exploratory47/47, capacity/date/milestone and synthetic import checked.
+- [ ] Checkpoint revision and finish final production/layout/keyboard/Back evaluation.
 - [ ] Obtain independent review PASS, preserving failures and source freshness, then hand off publication.
 
 ## Surprises & Discoveries
@@ -59,3 +61,11 @@ Revision note2026-10-09: initial agreed design and runnable acceptance recorded 
 Revision note2026-10-09: maintained actual discoveries, model/UI implementation and remaining evidence; retained failures instead of replacing them with passclaims.
 
 Revisionnote2026-10-09: reviewer-directedactualBackfailurefixedwithnativeautocompleteoff onforms/chartselect, noextralifecyclehandler. Invaliddraftstatus nowtruthful. AppliedandpendingBackcases independentlyexercised bydeveloperandrecordedinEVALUATION.
+
+## Live revision milestone — 2026-10-09
+
+Owner requested new guidance. app/model.js now needs version2 resources (constant available people/day), task allocation and zero-duration events. A daily sweep sums active [start,end) demand without rescheduling. Baseline6 overloaded days/peak1.6 gives the requested capacity lesson while existing date answers remain. app/app.js safely inserts full chart labels, transforms milestone placeholders to zero-width points/diamonds, draws promise and marks unapplied edits. Update source/tests/fixtures/fonts/notices/current PLAN and public BUILD-STORY before checkpoint.
+
+Run inventory check, npm ci --cache /private/tmp/bab-npm-cache and npm run build. Start npm run test:browser -- --port 9723 and npm run preview -- --port 9724. CUA opens /tests/ and production /bab-example-roadmap/, then same-origin layout frames. Verify47 tests, default Nov29 with6 overloaddays, capacity1.6 recovery unchanged dates, milestone0days, packagingDec2, pending edits/Back, names/promise position, keyboard and actual frame widths/fonts. Keep failed rounds and fresh source hashes. Independent review precedes publication; no push before root says so.
+
+Revision note: resources and milestone semantics restore omitted brief requirements; no new simulated approval is claimed.

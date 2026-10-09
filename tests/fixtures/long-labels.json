@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "name": "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
   "start": "2026-01-05",
   "promise": "2026-01-12",
@@ -9,7 +9,10 @@
       "name": "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
       "duration": 2,
       "release": null,
-      "dependencies": []
+      "dependencies": [],
+      "kind": "task",
+      "resource": "team",
+      "allocation": 1
     },
     {
       "id": "beta",
@@ -18,7 +21,17 @@
       "release": null,
       "dependencies": [
         "constructor"
-      ]
+      ],
+      "kind": "task",
+      "resource": "team",
+      "allocation": 1
+    }
+  ],
+  "resources": [
+    {
+      "id": "team",
+      "name": "Example team",
+      "capacity": 2
     }
   ]
 }

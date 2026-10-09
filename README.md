@@ -9,3 +9,7 @@ Current test page contains40 independent checks using actual model exports. Pure
 Date convention: start inclusive, end exclusive; whole calendar days including weekends/holidays. No resource optimization, probability forecast or safety assessment. See PLAN/DECISIONS, exact simulated PLANNING-CONVERSATION, current EVALUATION and independent REVIEW for scope/evidence.
 
 Source: https://github.com/jordanmeyer/bab-example-roadmap. Independent classroom example with no institutional affiliation or endorsement. Public Git attribution uses the user-authorized course identity Jordan Meyer <jordanmeyer@protonmail.com>.
+
+## Revised teaching example
+
+[How this was built](BUILD-STORY.md) connects the opening brief, simulated planning, current plan, recipe choices and actual evaluation. Version2 JSON adds explicit teams/capacity, task allocations and zero-duration milestones; version1 imports reject rather than guess absent resource assumptions. Defaults show6 days of Launch team overload despite2 days of date buffer. Licensed local EB Garamond/Open Sans fonts are in app/theme/fonts and notices. Apply all edits commits the full scenario; pending results remain labeled.

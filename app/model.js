@@ -10,17 +10,21 @@ const label = value => typeof value === 'string' && value.trim().length > 0 && v
 const date = value => Number.isFinite(day(value)) && value >= '2020-01-01' && value <= '2035-12-31';
 export function validate(plan) {
   const errors = [];
-  if (!keys(plan, 'version,name,start,promise,tasks') || plan.version !== 1) return ['Expected a version 1 plan with name, start, promise and tasks.'];
+  if (!keys(plan, 'version,name,start,promise,resources,tasks') || plan.version !== 2) return ['Expected a version 2 plan with name, start, promise, resources and tasks. Export the current example for its resource and milestone format.'];
   if (!label(plan.name)) errors.push('Plan name must contain 1–80 characters.');
   if (!date(plan.start) || !date(plan.promise)) errors.push('Project start and promise must be real dates from 2020 through 2035.');
+  if (!Array.isArray(plan.resources) || !plan.resources.length || plan.resources.length > 8 || plan.resources.some(r => !keys(r, 'id,name,capacity') || !label(r.name) || typeof r.id !== 'string' || !/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(r.id) || !Number.isFinite(r.capacity) || r.capacity <= 0 || r.capacity > 100) || new Set(plan.resources.map(r => r.id)).size !== plan.resources.length) return [...errors, 'Use 1–8 unique named resources with capacity above 0 and up to 100 people/day.'];
   if (!Array.isArray(plan.tasks) || !plan.tasks.length || plan.tasks.length > 30) return [...errors, 'Use 1–30 tasks.'];
-  if (plan.tasks.some(t => !keys(t, 'id,name,duration,release,dependencies'))) return [...errors, 'Each task needs exactly id, name, duration, release and dependencies.'];
+  if (plan.tasks.some(t => !keys(t, 'id,name,kind,duration,release,dependencies,resource,allocation'))) return [...errors, 'Each task needs exactly id, name, kind, duration, release, dependencies, resource and allocation.'];
   const ids = new Set();
   for (const t of plan.tasks) {
     if (typeof t.id !== 'string' || !/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(t.id) || ids.has(t.id)) errors.push('Task IDs must be unique, start with a letter and use at most 40 letters, digits, underscores or hyphens.');
     ids.add(t.id);
     if (!label(t.name)) errors.push(`${t.id}: name must contain 1–80 characters.`);
-    if (!Number.isInteger(t.duration) || t.duration < 1 || t.duration > 365) errors.push(`${t.id}: duration must be a whole number from 1 to 365 days.`);
+    if (!['task', 'milestone'].includes(t.kind)) errors.push(`${t.id}: choose task or milestone.`);
+    if (t.kind === 'milestone' && (t.duration !== 0 || t.resource !== null || t.allocation !== 0)) errors.push(`${t.id}: a milestone has zero duration, no resource and zero allocation.`);
+    if (t.kind === 'task' && (!plan.resources.some(r => r.id === t.resource) || !Number.isFinite(t.allocation) || t.allocation <= 0 || t.allocation > 100)) errors.push(`${t.id}: choose a resource and allocation above 0 and up to 100 people/day.`);
+    if (!Number.isInteger(t.duration) || t.duration < (t.kind === 'milestone' ? 0 : 1) || t.duration > 365) errors.push(`${t.id}: duration must be a whole number from 1 to 365 days.`);
     if (t.release !== null && !date(t.release)) errors.push(`${t.id}: earliest permitted start must be null or a real date from 2020 through 2035.`);
     if (!Array.isArray(t.dependencies) || t.dependencies.some(d => typeof d !== 'string') || new Set(t.dependencies).size !== t.dependencies.length) errors.push(`${t.id}: dependencies must be a list of unique task IDs.`);
   }
@@ -58,7 +62,17 @@ export function schedule(plan) {
     row.latestStart = latestEnd - t.duration;
     row.float = row.latestStart - row.start;
   }
-  return { valid: true, errors: [], rows: plan.tasks.map(t => dates.get(t.id)), finish, span: finish - day(plan.start), buffer: day(plan.promise) - finish };
+  const loads = plan.resources.map(resource => {
+    const days = []; let peak = 0;
+    for (let date = day(plan.start); date < finish; date++) {
+      const active = [...dates.values()].filter(t => t.resource === resource.id && date >= t.start && date < t.end);
+      const work = active.reduce((sum, t) => sum + t.allocation, 0);
+      peak = Math.max(peak, work);
+      if (work > resource.capacity + 1e-9) days.push({ date, work, tasks: active.map(t => t.id) });
+    }
+    return { ...resource, peak, days };
+  });
+  return { valid: true, errors: [], loads, rows: plan.tasks.map(t => dates.get(t.id)), finish, span: finish - day(plan.start), buffer: day(plan.promise) - finish };
 }
 export function parsePlan(text) {
   if (new TextEncoder().encode(text).length > 131072) throw Error('Use a JSON file no larger than 128 KiB.');
@@ -69,16 +83,18 @@ export function parsePlan(text) {
   return plan;
 }
 export function samplePlan(preset = '') {
-  return { version: 1, name: preset === 'packaging' ? 'Packaging takes five extra days' : preset === 'safety' ? 'Safety takes three extra days' : 'Refillable desk cleaner launch', start: '2026-11-02', promise: '2026-12-01', tasks: [
-    {id:'validation',name:'Product validation',duration:5,release:null,dependencies:[]},
-    {id:'packaging',name:'Packaging design',duration:preset === 'packaging' ? 13 : 8,release:null,dependencies:['validation']},
-    {id:'supplier',name:'Supplier readiness',duration:10,release:null,dependencies:['validation']},
-    {id:'pilot',name:'Pilot batch',duration:4,release:null,dependencies:['packaging','supplier']},
-    {id:'safety',name:'Safety testing',duration:preset === 'safety' ? 10 : 7,release:null,dependencies:['pilot']},
-    {id:'sales',name:'Sales materials',duration:6,release:null,dependencies:['packaging']},
-    {id:'launch',name:'Launch preparation',duration:1,release:null,dependencies:['safety','sales']}
+  return { version: 2, resources: [{id:'research',name:'Research',capacity:1},{id:'design',name:'Design',capacity:1},{id:'launch-team',name:'Launch team',capacity:1}], name: preset === 'packaging' ? 'Packaging takes five extra days' : preset === 'safety' ? 'Safety takes three extra days' : 'Refillable desk cleaner launch', start: '2026-11-02', promise: '2026-12-01', tasks: [
+    {id:'validation',kind:'task',resource:'research',allocation:1,name:'Product validation',duration:5,release:null,dependencies:[]},
+    {id:'packaging',kind:'task',resource:'design',allocation:1,name:'Packaging design',duration:preset === 'packaging' ? 13 : 8,release:null,dependencies:['validation']},
+    {id:'supplier',kind:'task',resource:'launch-team',allocation:0.7,name:'Supplier readiness',duration:10,release:null,dependencies:['validation']},
+    {id:'pilot',kind:'task',resource:'launch-team',allocation:1,name:'Pilot batch',duration:4,release:null,dependencies:['packaging','supplier']},
+    {id:'safety',kind:'task',resource:'launch-team',allocation:0.5,name:'Safety testing',duration:preset === 'safety' ? 10 : 7,release:null,dependencies:['pilot']},
+    {id:'sales',kind:'task',resource:'launch-team',allocation:0.6,name:'Sales materials',duration:6,release:null,dependencies:['packaging']},
+    {id:'launch',kind:'task',resource:'launch-team',allocation:1,name:'Launch preparation',duration:1,release:null,dependencies:['safety','sales']},
+    {id:'design-ready',name:'Design sign-off',kind:'milestone',duration:0,resource:null,allocation:0,release:null,dependencies:['packaging']},
+    {id:'ready',name:'Ready to launch',kind:'milestone',duration:0,resource:null,allocation:0,release:null,dependencies:['launch']}
   ]};
 }
-// Frappe treats a date-only end as inclusive. Give it the last occupied day.
-// Only safe authored ordinal labels reach its HTML-capable name property.
-export const chartTasks = rows => rows.map((t, i) => ({id:`task${i + 1}`,name:`${String(i + 1).padStart(2,'0')} · ${t.duration}d`,start:iso(t.start),end:iso(t.end - 1),progress:0,dependencies:t.dependencies.map(id => `task${rows.findIndex(row => row.id === id) + 1}`),custom_class:t.float === 0 ? 'critical' : 'flexible'}));
+// Frappe's HTML-capable labels stay empty; the UI inserts names with textContent.
+// A zero-duration milestone gets only a date anchor; the UI replaces its bar with a diamond.
+export const chartTasks = rows => rows.map((t, i) => ({id:`task${i + 1}`,name:'',start:iso(t.start),end:iso(t.duration ? t.end - 1 : t.start),progress:0,dependencies:t.dependencies.map(id => `task${rows.findIndex(row => row.id === id) + 1}`),custom_class:t.kind === 'milestone' ? 'milestone' : t.float === 0 ? 'critical' : 'flexible'}));
