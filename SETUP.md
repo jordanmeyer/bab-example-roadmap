@@ -11,3 +11,5 @@ Commands from this root:
     npm run preview -- --port 9510
 
 Test server session37644, http://127.0.0.1:9509/tests/. Production session53793, http://127.0.0.1:9510/bab-example-roadmap/. Browser own tab3. Fixed frames at /tests/layout.html?width=320 or390 or1440, no shared viewport override. If served modules lag filesystem changes restart only own test server. Use actual prefix. No root/publication operations by developer.
+
+Own testserver restarted to session62850 after fixedframeharnesschange because of observed missedchanges; production9510 unchanged. Tests now40cases includingreviewerfixtures; final browserrun recorded separately.

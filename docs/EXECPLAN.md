@@ -10,13 +10,13 @@ A fictional consumer-products team can see whether a promised launch survives pa
 
 - [x] (2026-10-09) Simulated planning completed; assumptions and exact confirmation saved.
 - [x] (2026-10-09) New isolated folder and managed starter prepared.
-- [ ] Implement pure schedule model, native forms, persistent read-only Gantt and independent tests.
+- [x] (2026-10-09) Implemented model, native forms, persistent readonlyGantt and40independentcases.
 - [ ] Verify production, import/export, keyboard and narrow/desktop; simplify source separately.
 - [ ] Obtain independent review PASS, preserving failures and source freshness, then hand off publication.
 
 ## Surprises & Discoveries
 
-Pending installed source inspection: Frappe date-only end handling must be reconciled with our end-exclusive contract, not assumed from bar appearance.
+Installed Frappe adds one day to date-only ends; adapter supplies lastoccupiedday. Its HTML-capablelabels/prototype-map IDs are isolated via fixedordinals. DefaultWeekmonthpadding displayed emptychart at320; changed to Day32px/2daypadding. Initial fixedmonthheaderstring repeated/overlapped daily; changed to monthtransitioncallback and visually rechecked. Harness hiddenattribute was overridden by iframe display:block; explicit hiddenCSS fixed it. Initial parentfolder npminstall cleaned up, describedSETUP.
 
 ## Decision Log
 
@@ -24,7 +24,7 @@ Use Frappe1.2.2 because the agreed product is a dependency schedule. Use plain J
 
 ## Outcomes & Retrospective
 
-Planning complete; implementation and evidence pending. No publication yet.
+Product complete and source review underway. Actual38casefirstsuitepassed;40casefinalsuitepending. Production presets/import/rejection/export/cycle/keyboardsubmit/DSTbarwidth/lifetime and320/390/1440 screenshots observed. Remaining independentreview and finalfreshness. No publication yet.
 
 ## Context and Orientation
 
@@ -55,3 +55,5 @@ Baseline manual path5+10+4+7+1=27days; Nov2+27=Nov29. Packaging13days replaces s
 model exports day(dateString), iso(integerDay), validate(plan), schedule(plan), parsePlan(text), samplePlan(preset). schedule returns valid/errors or taskdates,float,completion andbuffer. App uses FrappeGantt1.2.2 readonly,popupfalse,local CSS; Vite8.3.4 toolonly. Strict schema and bounded data, no network APIs. Synthetic dataonly.
 
 Revision note2026-10-09: initial agreed design and runnable acceptance recorded before implementation.
+
+Revision note2026-10-09: maintained actual discoveries, model/UI implementation and remaining evidence; retained failures instead of replacing them with passclaims.

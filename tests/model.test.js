@@ -42,4 +42,8 @@ reject('Empty schedule rejected',p=>p.tasks=[],'1–30');
 reject('Overlong name rejected',p=>p.tasks[0].name='W'.repeat(81),'1–80');
 check('Malformed JSON rejected',()=>{let error;try{parsePlan('{oops');}catch(e){error=e;}equal(error?.message,'This file is not valid JSON.');});
 check('Byte limit catches multibyte input',()=>{let error;try{parsePlan('é'.repeat(65537));}catch(e){error=e;}equal(error?.message,'Use a JSON file no larger than 128 KiB.');});
+const dst=parsePlan(await (await fetch('./fixtures/reviewer-dst.json')).text());
+check('Independent scrambled DST release/merge:9days,−1buffer,onlyEcritical',()=>{const r=valid(dst);equal([r.span,r.buffer,iso(r.finish)],[9,-1,'2026-03-15']);equal(r.rows.map(t=>[iso(t.start),iso(t.end),t.float]),[['2026-03-10','2026-03-11',2],['2026-03-06','2026-03-08',2],['2026-03-14','2026-03-15',0],['2026-03-11','2026-03-13',2],['2026-03-08','2026-03-11',2]]);});
+const boundary=parsePlan(await (await fetch('./fixtures/reviewer-boundary.json')).text());
+check('Independent maximum:365+365=730days toDec31,2025; oneextra rejected',()=>{const r=valid(boundary);equal([r.span,r.buffer,iso(r.finish)],[730,0,'2025-12-31']);const p=structuredClone(boundary);p.tasks.push({id:'extra',name:'Extra',duration:1,release:null,dependencies:[p.tasks[1].id]});equal(schedule(p).valid,false);});
 const status=document.getElementById('status');status.textContent=`${count-failures}/${count} passed; ${failures} failed.`;status.className=failures?'fail':'pass';

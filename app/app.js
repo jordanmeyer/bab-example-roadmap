@@ -28,7 +28,7 @@ function drawChart(result) {
   const source=$('chart-view').value==='baseline'?schedule(baseline):result;
   const tasks=chartTasks(source.rows);
   if(gantt) gantt.refresh(tasks);
-  else gantt=new Gantt($('gantt'),tasks,{readonly:true,popup:false,view_mode:'Week',column_width:140,infinite_padding:false,holidays:{},ignore:[],today_button:false,scroll_to:'start',bar_height:28,padding:18,container_height:'auto'});
+  else gantt=new Gantt($('gantt'),tasks,{readonly:true,popup:false,view_mode:'Day',view_modes:[{name:'Day',padding:'2d',step:'1d',lower_text:'D',upper_text:(date,previous)=>!previous||date.getMonth()!==previous.getMonth()?new Intl.DateTimeFormat('en-US',{month:'short',year:'numeric'}).format(date):'',upper_text_frequency:30}],column_width:32,infinite_padding:false,holidays:{},ignore:[],today_button:false,scroll_to:'start',bar_height:28,padding:18,container_height:'auto'});
   $('chart-caption').textContent=`${$('chart-view').value==='baseline'?'Baseline':'Revised'} schedule: ${dateText(source.finish)} ready. Bars show occupied calendar days; numbers match task order. Exact end boundaries appear in the table. Scroll horizontally for dates.`;
 }
 function render() {
