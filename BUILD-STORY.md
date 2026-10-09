@@ -8,6 +8,10 @@
 
 [PLANNING-CONVERSATION.md](PLANNING-CONVERSATION.md) is the original simulated planning exchange, not a real student endorsement. It selected calendar-day dependencies and a fixed baseline but narrowed the initial implementation too far. The app owner's October9 revision request restores team capacity and true milestones. [PLAN.md](PLAN.md) and [DECISIONS.md](DECISIONS.md) define the current contract and reasons.
 
+## Practice the lesson
+
+[Prediction exercises and answers](WALKTHROUGH.md) cover float, external starts, sign-off dependencies, a manual resource repair and invalid-input recovery. Human novice and screen-reader checks remain explicit protocols, not claimed outcomes.
+
 ## The lesson
 
 The dependency path is5+10+4+7+1=27 days, Nov2 to Nov29. The promise is Dec1. Yet Launch team needs1.3 people on Nov15–16 and1.6 on Nov17–20 against1 available. Raising capacity to1.6 clears that conflict without moving dates. Packaging+5 instead moves completion to Dec2. Dates, people and promise are different constraints. Milestones are events that use zero days and capacity.
@@ -19,3 +23,5 @@ Browser App Builder Build, Evaluate, Deploy and Frappe Gantt guidance shaped the
 ## Evidence and limits
 
 [Evaluation](EVALUATION.md) preserves actual checks and prior failed rounds; [independent review](REVIEW.md) identifies reviewed commits; [deployment](DEPLOYMENT.md) identifies what went live. Revised evidence is added only after running it. Capacity is constant by calendar day; no automated leveling, probability, holidays, cost model or safety validation is promised. Local JSON stays in memory until export.
+
+The checklist correction connects Design sign-off to Pilot and Sales, so delayed authorization changes downstream work and Ready consistently. Current PLAN and evaluation supersede the original milestone topology while retaining its failed counterexample.

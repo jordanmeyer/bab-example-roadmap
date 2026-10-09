@@ -72,7 +72,13 @@ export function schedule(plan) {
     }
     return { ...resource, peak, days };
   });
-  return { valid: true, errors: [], loads, rows: plan.tasks.map(t => dates.get(t.id)), finish, span: finish - day(plan.start), buffer: day(plan.promise) - finish };
+  const path = [];
+  let controlling = tasks.findLast(t => dates.get(t.id).end === finish);
+  while (controlling) {
+    path.unshift(controlling.id);
+    controlling = tasks.find(t => controlling.dependencies.includes(t.id) && dates.get(t.id).end === dates.get(controlling.id).start);
+  }
+  return { valid: true, errors: [], loads, path, rows: plan.tasks.map(t => dates.get(t.id)), finish, span: finish - day(plan.start), buffer: day(plan.promise) - finish };
 }
 export function parsePlan(text) {
   if (new TextEncoder().encode(text).length > 131072) throw Error('Use a JSON file no larger than 128 KiB.');
@@ -83,13 +89,13 @@ export function parsePlan(text) {
   return plan;
 }
 export function samplePlan(preset = '') {
-  return { version: 2, resources: [{id:'research',name:'Research',capacity:1},{id:'design',name:'Design',capacity:1},{id:'launch-team',name:'Launch team',capacity:1}], name: preset === 'packaging' ? 'Packaging takes five extra days' : preset === 'safety' ? 'Safety takes three extra days' : 'Refillable desk cleaner launch', start: '2026-11-02', promise: '2026-12-01', tasks: [
+  return { version: 2, resources: [{id:'research',name:'Research',capacity:1},{id:'design',name:'Design',capacity:1},{id:'launch-team',name:'Launch team',capacity:1}], name: ({packaging:'Packaging takes five extra days',safety:'Safety takes three extra days',release:'Supplier slot opens November 12',repair:'Sales waits until testing finishes'})[preset] || 'Refillable desk cleaner launch', start: '2026-11-02', promise: '2026-12-01', tasks: [
     {id:'validation',kind:'task',resource:'research',allocation:1,name:'Product validation',duration:5,release:null,dependencies:[]},
     {id:'packaging',kind:'task',resource:'design',allocation:1,name:'Packaging design',duration:preset === 'packaging' ? 13 : 8,release:null,dependencies:['validation']},
-    {id:'supplier',kind:'task',resource:'launch-team',allocation:0.7,name:'Supplier readiness',duration:10,release:null,dependencies:['validation']},
-    {id:'pilot',kind:'task',resource:'launch-team',allocation:1,name:'Pilot batch',duration:4,release:null,dependencies:['packaging','supplier']},
+    {id:'supplier',kind:'task',resource:'launch-team',allocation:0.7,name:'Supplier readiness',duration:10,release:preset === 'release' ? '2026-11-12' : null,dependencies:['validation']},
+    {id:'pilot',kind:'task',resource:'launch-team',allocation:1,name:'Pilot batch',duration:4,release:null,dependencies:['design-ready','supplier']},
     {id:'safety',kind:'task',resource:'launch-team',allocation:0.5,name:'Safety testing',duration:preset === 'safety' ? 10 : 7,release:null,dependencies:['pilot']},
-    {id:'sales',kind:'task',resource:'launch-team',allocation:0.6,name:'Sales materials',duration:6,release:null,dependencies:['packaging']},
+    {id:'sales',kind:'task',resource:'launch-team',allocation:0.6,name:'Sales materials',duration:6,release:preset === 'repair' ? '2026-11-28' : null,dependencies:['design-ready']},
     {id:'launch',kind:'task',resource:'launch-team',allocation:1,name:'Launch preparation',duration:1,release:null,dependencies:['safety','sales']},
     {id:'design-ready',name:'Design sign-off',kind:'milestone',duration:0,resource:null,allocation:0,release:null,dependencies:['packaging']},
     {id:'ready',name:'Ready to launch',kind:'milestone',duration:0,resource:null,allocation:0,release:null,dependencies:['launch']}

@@ -60,7 +60,7 @@ function render() {
   if(plan.tasks.some(t=>t.id===selected))$('task-select').value=selected;
   editTask();$('errors').hidden=result.valid;
   $('error-list').replaceChildren(...result.errors.map(e=>node('li',e)));
-  $('results').hidden=!result.valid;$('export').disabled=!result.valid;$('baseline-save').disabled=!result.valid;
+  $('results').hidden=!result.valid;document.querySelector('.comparison').hidden=!result.valid;$('export').disabled=!result.valid;document.querySelector('.export-copy').disabled=!result.valid;$('baseline-save').disabled=!result.valid;
   $('baseline-label').textContent=`Baseline: ${baseline.name} · ${dateText(prior.finish)} ready`;
   $('resource-check').hidden=!result.valid;
   $('capacity-inputs').replaceChildren(...plan.resources.map(r=>{const label=node('label',`${r.name} capacity · people/day`),input=document.createElement('input');input.type='number';input.min='0.01';input.max='100';input.step='any';input.value=r.capacity;input.name=r.id;label.append(input);return label;}));
@@ -73,9 +73,15 @@ function render() {
   const tableResult=$('chart-view').value==='baseline'?prior:result;
   document.querySelector('caption').textContent=`${$('chart-view').value==='baseline'?'Baseline':'Revised'} dates versus baseline · end dates are the boundary after work finishes`;
   $('task-rows').replaceChildren(...tableResult.rows.map((t,i)=>{
-    const tr=document.createElement('tr'),name=document.createElement('th');name.scope='row';name.append(node('span',String(i+1).padStart(2,'0'),'ordinal'),node('span',t.name));tr.append(name);
+    const tr=document.createElement('tr'),name=document.createElement('th');name.scope='row';const edit=node('button',t.name,'task-link');edit.type='button';edit.dataset.task=t.id;edit.disabled=!plan.tasks.some(task=>task.id===t.id);name.append(node('span',String(i+1).padStart(2,'0'),'ordinal'),edit);tr.append(name);
     const dates=document.createElement('td');dates.append(node('span',dateText(t.start),'date-line'),node('span',t.duration?`→ ${dateText(t.end)}`:'Milestone','date-line'));tr.append(dates,node('td',t.duration?String(t.duration):'0 · milestone'),node('td',t.resource?`${($('chart-view').value==='baseline'?baseline:plan).resources.find(r=>r.id===t.resource)?.name || t.resource} · ${t.allocation}`:'No capacity used'),node('td',t.dependencies.map(id=>tableResult.rows.find(t=>t.id===id).name).join('; ')||'Project start'),node('td',t.float===0?'Critical · 0 days':`${t.float} days`,'float'),node('td',priorRows.has(t.id)?changeText(t.end-priorRows.get(t.id).end):'New task'));return tr;
   }));
+  const changed=result.rows.filter(t=>!priorRows.has(t.id)||t.start!==priorRows.get(t.id).start||t.end!==priorRows.get(t.id).end);
+  $('changed-tasks').replaceChildren(...(changed.length?changed.map(t=>{const old=priorRows.get(t.id);return node('li',`${t.name}: ${old?dateText(old.start)+' → '+dateText(old.end):'not in baseline'}; revised ${dateText(t.start)} → ${dateText(t.end)}.`);}):[node('li','No task dates differ from the baseline.')]));
+  const chain=r=>r.path.map(id=>r.rows.find(t=>t.id===id).name).join(' → ');
+  $('controlling-chains').textContent=`One controlling chain in baseline: ${chain(prior)}. Revised: ${chain(result)}. A later external start can begin a controlling chain.`;
+  const pack=result.rows.find(t=>t.id==='packaging'),oldPack=priorRows.get('packaging');
+  $('schedule-explanation').textContent=pack&&oldPack?`Baseline Packaging design has ${oldPack.float} days of float: its ${oldPack.duration}-day duration can absorb that much delay without moving baseline completion. Revised duration is ${pack.duration} days (${changeText(pack.duration-oldPack.duration)} in duration). All-work completion is ${changeText(result.finish-prior.finish).toLowerCase()}. Compare the controlling chains and changed dates below; other edits may also affect completion.`:'All-work completion takes the latest end of every task or milestone. Compare changed dates and controlling chains below.';
   const conflicts=result.loads.filter(r=>r.days.length);
   $('resource-headline').textContent=conflicts.length?`${conflicts.map(r=>r.name).join(', ')} ${conflicts.length===1?'is':'are'} over capacity`:'Workload fits the entered team capacity';
   $('resource-summary').textContent=conflicts.length?conflicts.map(r=>`${r.name}: ${r.days.length} overloaded days; peak ${Number(r.peak.toFixed(2))} people needed / ${r.capacity} available.`).join(' ')+' Dependency dates are not a resource-feasible commitment.':'This capacity check does not add contingency or automatically reschedule tasks.';
@@ -83,6 +89,7 @@ function render() {
   drawChart(result);
 }
 $('task-select').addEventListener('change',editTask);
+$('task-rows').addEventListener('click',event=>{const button=event.target.closest('[data-task]');if(!button)return;$('task-select').value=button.dataset.task;editTask();$('editor').open=true;$('task-name').focus();});
 $('chart-view').addEventListener('change',render);
 function applyEdits(event) {
   event.preventDefault();const id=$('task-select').value,kind=$('kind').value;
@@ -90,17 +97,17 @@ function applyEdits(event) {
 }
 for(const id of ['project-form','task-form','capacity-form']) {
   $(id).addEventListener('submit',applyEdits);
-  $(id).addEventListener('input',event=>{if(event.target.id==='task-select')return;$('pending').hidden=false;$('chart-view').disabled=true;$('task-select').disabled=true;$('baseline-save').disabled=true;$('export').disabled=true;});
+  $(id).addEventListener('input',event=>{if(event.target.id==='task-select')return;$('pending').hidden=false;$('chart-view').disabled=true;$('task-select').disabled=true;$('baseline-save').disabled=true;$('export').disabled=true;document.querySelector('.export-copy').disabled=true;document.querySelectorAll('[data-task]').forEach(button=>button.disabled=true);});
 }
 $('kind').addEventListener('change',()=>{const milestone=$('kind').value==='milestone';$('duration').disabled=milestone;$('duration').min=milestone?0:1;$('resource').disabled=milestone;$('allocation').disabled=milestone;if(milestone){$('duration').value=0;$('allocation').value=0;}else{$('duration').value=Math.max(1,Number($('duration').value));$('allocation').value=Math.max(1,Number($('allocation').value));}});
-for(const preset of ['packaging','safety'])$(preset).addEventListener('click',()=>{baseline=samplePlan();commit(samplePlan(preset),'Delay scenario loaded. Comparison baseline: original launch plan.');});
+for(const preset of ['packaging','safety','release','repair'])$(preset==='release'||preset==='repair'?preset+'-example':preset).addEventListener('click',()=>{baseline=samplePlan();commit(samplePlan(preset),'Teaching scenario loaded. Current plan replaced; comparison baseline is the original launch.');});
 $('reset').addEventListener('click',()=>{baseline=samplePlan();commit(samplePlan(),'Original dates, teams and baseline restored.');});
 $('recover').addEventListener('click',()=>commit(structuredClone(lastValid),'Last valid schedule restored.'));
 $('baseline-save').addEventListener('click',()=>{baseline=structuredClone(plan);revision++;render();announce('Current valid schedule saved as the comparison baseline in this tab.');});
 function download(value,name) {
   const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-$('export').addEventListener('click',()=>download(plan,'launch-plan.json'));
+for(const button of [$('export'),document.querySelector('.export-copy')])button.addEventListener('click',()=>download(plan,'launch-plan.json'));
 $('example-download').addEventListener('click',()=>download(samplePlan(),'launch-example.json'));
 $('import').addEventListener('change',async event=>{
   const file=event.target.files[0],version=revision;if(!file)return;

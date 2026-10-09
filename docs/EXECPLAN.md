@@ -69,3 +69,19 @@ Owner requested new guidance. app/model.js now needs version2 resources (constan
 Run inventory check, npm ci --cache /private/tmp/bab-npm-cache and npm run build. Start npm run test:browser -- --port 9723 and npm run preview -- --port 9724. CUA opens /tests/ and production /bab-example-roadmap/, then same-origin layout frames. Verify47 tests, default Nov29 with6 overloaddays, capacity1.6 recovery unchanged dates, milestone0days, packagingDec2, pending edits/Back, names/promise position, keyboard and actual frame widths/fonts. Keep failed rounds and fresh source hashes. Independent review precedes publication; no push before root says so.
 
 Revision note: resources and milestone semantics restore omitted brief requirements; no new simulated approval is claimed.
+
+
+## Checklist-correction milestone — October 9, 2026
+
+Purpose: reconcile actual authorization dependencies, then make date/resource reasoning reproducible by a student. app/model.js samplePlan now gates Pilot/Sales through sign-off, and schedule returns one controlling chain. app/app.js shows chains and changed dates, with table-to-editor focus. WALKTHROUGH defines independently derived predictions, answers, limits and human-test scripts. The existing-task editor/export remains bounded and local.
+
+Progress:
+- [x] Read all applicable ALL/ROAD checklist items and complete current model/UI/styles/tests/PLAN.
+- [x] Implement sign-off dependencies, controlling-chain/changed-date explanation, named replacement presets, release/resource cases, table editor selection and nearby persistence guidance.
+- [x] Add regression expectations: sign-offDec4→ReadyDec16; terminalReadyDec4; supplierreleaseNov12→Dec4; SalesNov21 remains6overloads/1.1; SalesNov28→zerooverloads/Dec5.
+- [ ] Validate browser suite, actual production flows,320px and200% text, freshness and independent review.
+- [ ] Obtain actual human screen-reader and novice walkthrough evidence, or report those gaps without claiming readiness.
+
+Surprises: prior Design sign-off was terminal and did not gate Pilot; source review counterexample is retained in checklist. Resource float is not spare capacity: moving Sales within float overlaps Safety and still overloads. Decision: preserve calendar days and constant people/day, use a manual delayed Sales case to expose lateness cost. Optional working calendars remain an assignment.
+
+Validation: use test9723/preview9724 under /bab-example-roadmap/, expect52 model checks with explicit regressions; actual Packaging exampleDec2, releaseexampleDec4, repairexampleDec5/nooverload, sign-offDec4→Dec16. Inspect native table-to-editor focus, pending/invalid recovery, longest supported names at320 and200% authored text enlargement. Keep source checkpoint clean; ordinary report commits may follow. Outcomes: implementation complete; browser/evidence and human verification remain pending.
